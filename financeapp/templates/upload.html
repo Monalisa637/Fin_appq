@@ -146,13 +146,13 @@
         </div>
 
         <script>
-            // Show selected file name
+            
             document.getElementById("file-input").addEventListener("change", function() {
                 const fileName = this.files[0] ? this.files[0].name : "";
                 document.getElementById("file-name").textContent = fileName;
             });
 
-            // Show message when form is submitted
+            
             document.getElementById("upload-form").addEventListener("submit", function() {
                 document.getElementById("status-message").style.display = "block";
             });
