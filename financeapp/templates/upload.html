@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FinGuru - Upload Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+        }
+
+        header {
+            background-color: #0f0f0f;
+            color: #00ff7f;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 80px);
+        }
+
+        .card {
+            background-color: #111;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 255, 127, 0.2);
+            text-align: center;
+            width: 400px;
+        }
+
+        h2 {
+            color: #00ff7f;
+            margin-bottom: 30px;
+        }
+
+        /* Custom file upload button */
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .file-upload input[type="file"] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-button {
+            border: 2px solid #00ff7f;
+            color: #00ff7f;
+            background-color: #0a0a0a;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .file-upload-button:hover {
+            background-color: #00ff7f;
+            color: #0a0a0a;
+        }
+
+        /* File name display */
+        #file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #00ff7f;
+            font-weight: 600;
+        }
+
+        /* Upload button */
+        button.submit-btn {
+            margin-top: 20px;
+            background-color: #00ff7f;
+            color: #0a0a0a;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 25px; /* Rounded rectangle */
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button.submit-btn:hover {
+            background-color: #0a0a0a;
+            color: #00ff7f;
+            border: 2px solid #00ff7f;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #111;
+            color: #00ff7f;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        FinGuru
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Upload Financial Document</h2>
+
+            <!-- Status message -->
+            <p id="status-message" style="color:#00ff7f; font-weight:600; display:none; margin-bottom:20px;">
+                ✅ File uploaded successfully!
+            </p>
+
+            <form id="upload-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label class="file-upload">
+                    <span class="file-upload-button">Choose File</span>
+                    <input type="file" name="file" id="file-input" required>
+                </label>
+                <div id="file-name"></div>
+                <br>
+                <button type="submit" class="submit-btn">Upload & Analyze</button>
+            </form>
+        </div>
+
+        <script>
+            // Show selected file name
+            document.getElementById("file-input").addEventListener("change", function() {
+                const fileName = this.files[0] ? this.files[0].name : "";
+                document.getElementById("file-name").textContent = fileName;
+            });
+
+            // Show message when form is submitted
+            document.getElementById("upload-form").addEventListener("submit", function() {
+                document.getElementById("status-message").style.display = "block";
+            });
+        </script>
+    </main>
+
+    <footer>
+        &copy; 2025 FinGuru. All rights reserved.
+    </footer>
+</body>
+</html>

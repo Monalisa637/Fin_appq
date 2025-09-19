@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FinGuru - Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #00ff7f;
+        }
+
+        header {
+            background-color: #0f0f0f;
+            color: #00ff7f;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        main {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: #111;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 255, 127, 0.2);
+            margin: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #00ff7f;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .chat-container {
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #00ff7f;
+            padding: 10px;
+            background-color: #0f0f0f;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 14px;
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #00ff7f;
+            background-color: #0a0a0a;
+            color: #00ff7f;
+        }
+
+        button {
+            background-color: #00ff7f;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #0a0a0a;
+            color: #00ff7f;
+            border: 1px solid #00ff7f;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        FinGuru Dashboard
+    </header>
+
+    <main>
+        <!-- Financial Data Table -->
+        <div class="card">
+            <h2>Extracted Financial Data</h2>
+            <table>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row.key }}</td>
+                    <td>{{ row.value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Chat / Q&A Box -->
+        <div class="card chat-container">
+            <h2>Ask FinGuru</h2>
+            <div id="chat-box" class="chat-box">
+                {% for chat in chats %}
+                    <p><b>You:</b> {{ chat.question }}</p>
+                    <p><b>FinGuru:</b> {{ chat.answer }}</p>
+                {% endfor %}
+            </div>
+
+            {% if doc_id %}
+            <form id="qa-form">
+                {% csrf_token %}
+                <input type="text" name="question" id="question" placeholder="Type your question..." required>
+                <button type="submit">Ask</button>
+            </form>
+            {% else %}
+            <p style="color:red;">Error: Document ID not found. Cannot submit question.</p>
+            {% endif %}
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById("qa-form");
+        const chatBox = document.getElementById("chat-box");
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const questionInput = document.getElementById("question");
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            fetch("{% url 'ask_question' doc_id %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "question=" + encodeURIComponent(question)
+            })
+            .then(res => res.json())
+            .then(data => {
+                chatBox.innerHTML += `<p><b>You:</b> ${question}</p>`;
+                chatBox.innerHTML += `<p><b>FinGuru:</b> ${data.answer}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+                questionInput.value = "";
+            })
+            .catch(err => console.error("Error:", err));
+        });
+    </script>
+</body>
+</html>
